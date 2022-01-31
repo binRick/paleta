@@ -18,6 +18,9 @@ $(OBJ): $(HDR)
 install: paleta
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp paleta  $(DESTDIR)$(PREFIX)/bin/
+	mkdir -p /etc/palettes
+	rsync palettes/* /etc/palettes/.
+
 
 clean:
 	rm -f paleta $(OBJ)

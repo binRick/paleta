@@ -2,9 +2,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <glob.h>
+#include <string.h>
 
 #include "config.h"
 #include "log.h"
+
+int ENV_MANAGE_ALL_PTYS = -1;
+
+char *env_get_or(char *name, char *default_val);
+char *env_get_or(char *name, char *default_val) {
+  char *result = getenv(name);
+  if (!result)
+    return default_val;
+  return result;
+}
 
 struct buf {
     size_t size;
@@ -19,6 +30,7 @@ static void pal_morph(const int);
 static void pal_write(struct buf);
 
 static void seq_add(struct buf *, const char *, const int, const char *);
+
 
 static void pal_read() {
     int c;
@@ -96,8 +108,10 @@ static void pal_morph(const int max_cols) {
     free(seq.str);
 }
 
+
 static void pal_write(struct buf seq) {
     glob_t buf;
+
 
     if (glob(PTS_GLOB, GLOB_NOSORT, NULL, &buf) != 0) {
         die("glob %s failed", PTS_GLOB);
@@ -105,12 +119,15 @@ static void pal_write(struct buf seq) {
 
     fwrite(seq.str, 1, seq.size, stdout);
 
+    ENV_MANAGE_ALL_PTYS = (strcmp(env_get_or(MANAGE_ALL_PTYS_ENV_VAR,"no"), "yes")==0) ? 1 : -1;
     for (size_t i = 0; i < buf.gl_pathc; i++) {
         FILE *f = fopen(buf.gl_pathv[i], "w");
-
         if (f) {
+          if( MANAGE_ALL_PTYS != -1 || ENV_MANAGE_ALL_PTYS == 1) {
+            fprintf(stderr, "Writing palette to %s\n", buf.gl_pathv[i]);
             fwrite(seq.str, 1, seq.size, f);
-            fclose(f);
+          }
+          fclose(f);
         }
     }
 
