@@ -19,6 +19,7 @@ install: paleta
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp paleta  $(DESTDIR)$(PREFIX)/bin/
 	mkdir -p /etc/palettes
+	[[ -d /etc/profile.d ]] && cp palette.sh /etc/profile.d
 	rsync palettes/* /etc/palettes/.
 
 
