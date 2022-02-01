@@ -1,7 +1,8 @@
 export MANAGE_ALL_PTYS=no
 export PALETTE_DIR=/etc/palettes
 export PALETTE_FILE=.palette
-export DEFAULT_PALETTE=dkeg-harbing-dark
+#export DEFAULT_PALETTE=dkeg-harbing-dark
+export DEFAULT_PALETTE=dkeg-blend-dark
 paleta="$(command -v paleta)"
 
 cwd_palette_file() {
