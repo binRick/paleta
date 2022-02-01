@@ -30,20 +30,13 @@ lp() {
 }
 
 rp() {
-	{
-
 		if [[ -f ~/.cache/current-palette ]]; then
 			#if [[ -f ~/.cache/current-palette ]]; then
 			ct="$(stat ~/.cache/current-palette | grep ^Modify | cut -d ' ' -f2,3 | cut -d: -f1,2)"
-
 			msg "Restoring cached palette from $ct"
 			[[ -f ~/.cache/current-palette ]] && cat ~/.cache/current-palette
-
 		fi
-
-	} >&2
-
-}
+} >&2
 
 main() {
 	if cwd_has_palette_file; then
@@ -53,10 +46,10 @@ main() {
 	fi
 
 	lp "$(cat $PF)"
-}
+} >&2
 
 ls_palettes() {
-	ls $PALETTE_DIR/*-*-* | xargs -I % basename % | sort -u
+	ls $PALETTE_DIR/*-* | xargs -I % basename % | sort -u
 }
 
-main >&2
+main
