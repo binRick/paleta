@@ -4,6 +4,25 @@ export PALETTE_FILE=.palette
 #export DEFAULT_PALETTE=dkeg-harbing-dark
 export DEFAULT_PALETTE=dkeg-blend-dark
 paleta="$(command -v paleta)"
+export PALETTE_LOADER_ENABLED=1
+LOADING_DEFAULT=
+
+cat_palette(){
+  echo -e "cat $(pwd)/$PALETTE_FILE 2>/dev/null || cat $PALETTE_DIR/$DEFAULT_PALETTE"
+}
+
+cmd(){
+  sh -c "test '$PALETTE_LOADER_ENABLED' == '1'" && echo "eval $paleta < <($(cat_palette))"
+}
+
+main(){
+  eval "$(cmd)"
+}
+
+if [[ "$PALETTE_LOADER_ENABLED" == "1" ]]; then
+  main >&2
+fi
+return
 
 cwd_palette_file() {
 	echo -e "$(pwd)/$PALETTE_FILE"
@@ -18,7 +37,7 @@ cwd_has_palette_file() {
 }
 
 msg() {
-	local dbg="pid:$$|cwd:$(pwd)"
+	local dbg="pid:$$|cwd:$(pwd)|default:$LOADING_DEFAULT|"
 	local msg="$@|$dbg"
 	if ! ansi --yellow --italic --faint --bg-black "$msg" 2>/dev/null; then
 		echo "$msg"
@@ -41,11 +60,12 @@ rp() {
 
 main() {
 	if cwd_has_palette_file; then
+    LOADING_DEFAULT=1
 		PF=$(cwd_palette_file)
 	else
+    LOADING_DEFAULT=0
 		PF=$PALETTE_DIR/$DEFAULT_PALETTE
 	fi
-
 	lp "$(cat $PF)"
 } >&2
 
